@@ -1,0 +1,25 @@
+id,firstName,lastName,email,contact,gender,course,yearLevel,status
+2026-0001,Juan,Dela Cruz,juan.delacruz@student.edu.ph,09171234500,Male,BSIT,1st Year,Active
+2026-0002,Maria,Santos,maria.santos@student.edu.ph,09171234537,Female,BSCS,2nd Year,Active
+2026-0003,Jose,Reyes,jose.reyes@student.edu.ph,09171234574,Male,BSBA,3rd Year,Active
+2026-0004,Ana,Garcia,ana.garcia@student.edu.ph,09171234611,Female,BSED,4th Year,Active
+2026-0005,Mark,Villanueva,mark.villanueva@student.edu.ph,09171234648,Male,BSCE,1st Year,Active
+2026-0006,Angela,Ramos,angela.ramos@student.edu.ph,09171234685,Female,BSN,2nd Year,Active
+2026-0007,Paolo,Mendoza,paolo.mendoza@student.edu.ph,09171234722,Male,BSIT,3rd Year,Active
+2026-0008,Kristine,Bautista,kristine.bautista@student.edu.ph,09171234759,Female,BSCS,4th Year,Active
+2026-0009,Carlo,Aquino,carlo.aquino@student.edu.ph,09171234796,Male,BSBA,1st Year,Active
+2026-0010,Jessa,Navarro,jessa.navarro@student.edu.ph,09171234833,Female,BSED,2nd Year,Active
+2026-0011,Miguel,Torres,miguel.torres@student.edu.ph,09171234870,Male,BSCE,3rd Year,Active
+2026-0012,Sofia,Castillo,sofia.castillo@student.edu.ph,09171234907,Female,BSN,4th Year,Active
+2026-0013,Rafael,Domingo,rafael.domingo@student.edu.ph,09171234944,Male,BSIT,1st Year,Active
+2026-0014,Bianca,Flores,bianca.flores@student.edu.ph,09171234981,Female,BSCS,2nd Year,Active
+2026-0015,Daniel,Cruz,daniel.cruz@student.edu.ph,09171235018,Male,BSBA,3rd Year,Active
+2026-0016,Patricia,Lim,patricia.lim@student.edu.ph,09171235055,Female,BSED,4th Year,Active
+2026-0017,Joshua,Pascual,joshua.pascual@student.edu.ph,09171235092,Male,BSCE,1st Year,Active
+2026-0018,Nicole,Tan,nicole.tan@student.edu.ph,09171235129,Female,BSN,2nd Year,Active
+2026-0019,Gabriel,Soriano,gabriel.soriano@student.edu.ph,09171235166,Male,BSIT,3rd Year,Active
+2026-0020,Camille,Dizon,camille.dizon@student.edu.ph,09171235203,Female,BSCS,4th Year,Inactive
+2026-0021,Francis,Morales,francis.morales@student.edu.ph,09171235240,Male,BSBA,1st Year,Graduated
+2026-0022,Isabel,Fernandez,isabel.fernandez@student.edu.ph,09171235277,Female,BSED,2nd Year,Graduated
+2027-0023,Sam Oliver,Mercadal,sam@gmail.com,09123654789,Male,BSN,1st Year,Active
+2026-0024,John Dave,Panon,pans@gmail.com,09123654785,Male,BSCE,1st Year,Active

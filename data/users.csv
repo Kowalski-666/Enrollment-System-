@@ -1,0 +1,3 @@
+id,firstName,lastName,username,password,role
+U-001,System,Administrator,admin,admin123,Administrator
+U-002,Maria,Registrar,registrar,reg123,Registrar

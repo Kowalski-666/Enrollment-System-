@@ -1,0 +1,26 @@
+code,title,units,capacity,course
+IT101,Introduction to Computing,3,40,BSIT
+IT102,Computer Programming 1,3,35,BSIT
+IT201,Data Structures and Algorithms,3,30,BSIT
+IT202,Database Management Systems,3,30,BSIT
+IT301,Capstone Project 1,3,3,BSIT
+MATH101,College Algebra,3,40,General
+ENG101,Purposive Communication,3,40,General
+BA101,Principles of Management,3,35,BSBA
+PE101,Physical Fitness,2,40,General
+NSTP101,National Service Training,3,50,General
+BSIT101,Programming Fundamentals,3,40,BSIT
+BSIT201,Data Structures and Algorithms,3,40,BSIT
+BSIT301,Information Management,3,40,BSIT
+BSCS101,Discrete Structures,3,40,BSCS
+BSCS201,Algorithms and Complexity,3,40,BSCS
+BSCS301,Artificial Intelligence,3,40,BSCS
+BSBA101,Principles of Management,3,40,BSBA
+BSBA201,Marketing Management,3,40,BSBA
+BSBA301,Financial Management,3,40,BSBA
+BSCE101,Engineering Mechanics,3,40,BSCE
+BSCE201,Structural Analysis,3,40,BSCE
+BSCE301,Hydraulics,3,40,BSCE
+BSN101,Fundamentals of Nursing,3,40,BSN
+BSN201,Medical-Surgical Nursing,3,40,BSN
+BSN301,Maternal and Child Health Nursing,3,40,BSN
