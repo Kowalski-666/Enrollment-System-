@@ -23,3 +23,5 @@ id,firstName,lastName,email,contact,gender,course,yearLevel,status
 2026-0022,Isabel,Fernandez,isabel.fernandez@student.edu.ph,09171235277,Female,BSED,2nd Year,Graduated
 2027-0023,Sam Oliver,Mercadal,sam@gmail.com,09123654789,Male,BSN,1st Year,Active
 2026-0024,John Dave,Panon,pans@gmail.com,09123654785,Male,BSCE,1st Year,Active
+2026-0025,Daniel,Padilla,dan@gmail.com,09125478963,Male,BSIT,2nd Year,Active
+2026-0026,Dave,Coloma,dave@gmail.com,09452178635,Male,BSED,2nd Year,Active

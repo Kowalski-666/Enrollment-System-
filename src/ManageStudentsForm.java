@@ -4,6 +4,7 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 /** Form 3: Manage Students */
@@ -25,8 +26,8 @@ public class ManageStudentsForm extends JFrame {
     private final JTextField tfId = new JTextField();
     private final JTextField tfFirst = new JTextField();
     private final JTextField tfLast = new JTextField();
-    private final JTextField tfEmail = new JTextField();
-    private final JTextField tfContact = new JTextField();
+    private final JTextField tfEmail = new PlaceholderTextField("ex. student@example.com");
+    private final JTextField tfContact = new PlaceholderTextField("ex. 09123456789");
 
     private final JComboBox<String> cbGender =
             new JComboBox<>(new String[]{"Male", "Female"});
@@ -99,7 +100,7 @@ public class ManageStudentsForm extends JFrame {
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(1250, 740);
-        setMinimumSize(new Dimension(850, 600));
+        setMinimumSize(new Dimension(640, 420));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
 
@@ -110,10 +111,15 @@ public class ManageStudentsForm extends JFrame {
         );
 
         add(createHeader(), BorderLayout.NORTH);
-        add(createMainContent(), BorderLayout.CENTER);
+        add(UI.scrollable(createMainContent(), 1260, 680), BorderLayout.CENTER);
 
+        tfId.setEditable(false);
+        tfEmail.setToolTipText("Example: student@example.com");
+        tfContact.setToolTipText("Example: 09XXXXXXXXX");
 
         refresh();
+        clearForm();
+        UI.enlargeText(this);
     }
 
     // =====================================================
@@ -329,7 +335,7 @@ public class ManageStudentsForm extends JFrame {
         field.setBackground(WHITE);
 
         field.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(BORDER, 1, true),
+                new UI.RoundedBorder(BORDER, 16, 1),
                 new EmptyBorder(9, 11, 9, 11)
         ));
 
@@ -428,6 +434,7 @@ public class ManageStudentsForm extends JFrame {
         JScrollPane tableScroll = new JScrollPane(table);
         tableScroll.setBorder(new LineBorder(BORDER, 1));
         tableScroll.getViewport().setBackground(WHITE);
+        UI.fillTableViewport(table, tableScroll);
         tableScroll.setHorizontalScrollBarPolicy(
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
@@ -507,10 +514,10 @@ public class ManageStudentsForm extends JFrame {
 
     private void styleTable() {
 
-        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.setFont(new Font("SansSerif", Font.PLAIN, 16));
         table.setForeground(TEXT);
         table.setBackground(WHITE);
-        table.setRowHeight(44);
+        table.setRowHeight(48);
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(true);
         table.setGridColor(new Color(241, 245, 249));
@@ -521,7 +528,7 @@ public class ManageStudentsForm extends JFrame {
         table.setIntercellSpacing(new Dimension(0, 0));
 
         JTableHeader header = table.getTableHeader();
-        header.setFont(new Font("SansSerif", Font.BOLD, 14));
+        header.setFont(new Font("SansSerif", Font.BOLD, 16));
         header.setForeground(Color.WHITE);
         header.setBackground(UI.PRIMARY);
         header.setPreferredSize(new Dimension(0, 48));
@@ -541,7 +548,7 @@ public class ManageStudentsForm extends JFrame {
                 label.setOpaque(true);
                 label.setBackground(UI.PRIMARY);
                 label.setForeground(Color.WHITE);
-                label.setFont(new Font("SansSerif", Font.BOLD, 14));
+                label.setFont(new Font("SansSerif", Font.BOLD, 16));
                 label.setHorizontalAlignment(SwingConstants.LEFT);
                 label.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createMatteBorder(
@@ -596,7 +603,46 @@ public class ManageStudentsForm extends JFrame {
                     .setCellRenderer(renderer);
         }
 
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.getColumnModel().getColumn(8).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table,
+                    Object value,
+                    boolean selected,
+                    boolean focused,
+                    int row,
+                    int column) {
+                String status = value == null ? "" : value.toString();
+                Color fill;
+                Color border;
+                Color text;
+
+                if ("Active".equals(status)) {
+                    fill = new Color(131, 214, 155);
+                    border = new Color(82, 176, 112);
+                    text = new Color(19, 76, 39);
+                } else if ("Inactive".equals(status)) {
+                    fill = new Color(247, 177, 177);
+                    border = new Color(215, 115, 115);
+                    text = new Color(122, 33, 33);
+                } else if ("Graduated".equals(status)) {
+                    fill = new Color(153, 214, 255);
+                    border = new Color(92, 170, 232);
+                    text = new Color(14, 66, 110);
+                } else {
+                    fill = new Color(226, 232, 240);
+                    border = new Color(148, 163, 184);
+                    text = UI.PRIMARY;
+                }
+
+                JLabel label = new UI.RoundedLabel(status, fill, border, text, 18);
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+                label.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
+                return label;
+            }
+        });
+
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         int[] widths = {
             125, 130, 130, 240, 155, 90, 135, 120, 105
@@ -614,7 +660,7 @@ public class ManageStudentsForm extends JFrame {
         JPanel panel = new JPanel();
         panel.setBackground(WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                new LineBorder(BORDER, 1, true),
+                new UI.RoundedBorder(BORDER, 18, 1),
                 new EmptyBorder(18, 18, 18, 18)
         ));
 
@@ -730,12 +776,37 @@ public class ManageStudentsForm extends JFrame {
         cbStatus.setSelectedItem(s.getStatus());
     }
 
+    private String generateNextStudentId() {
+        int currentYear = LocalDate.now().getYear();
+        int maxNumber = 0;
+
+        for (Student student : store.getStudents()) {
+            String id = student.getId();
+            if (id == null || !id.matches("\\d{4}-\\d{4}")) {
+                continue;
+            }
+
+            String yearPart = id.substring(0, 4);
+            if (!String.valueOf(currentYear).equals(yearPart)) {
+                continue;
+            }
+
+            int number = Integer.parseInt(id.substring(5));
+            if (number > maxNumber) {
+                maxNumber = number;
+            }
+        }
+
+        return String.format("%d-%04d", currentYear, maxNumber + 1);
+    }
+
     private void clearForm() {
 
         table.clearSelection();
 
-        tfId.setText("");
         tfId.setEnabled(true);
+        tfId.setEditable(false);
+        tfId.setText(generateNextStudentId());
 
         tfFirst.setText("");
         tfLast.setText("");
@@ -747,7 +818,7 @@ public class ManageStudentsForm extends JFrame {
         cbYear.setSelectedIndex(0);
         cbStatus.setSelectedIndex(0);
 
-        tfId.requestFocusInWindow();
+        tfFirst.requestFocusInWindow();
     }
 
     // =====================================================
@@ -859,6 +930,35 @@ public class ManageStudentsForm extends JFrame {
                     && candidate.matches("\\d*")) {
                 bypass.replace(offset, length, inserted, attributes);
             }
+        }
+    }
+
+    private static class PlaceholderTextField extends JTextField {
+        private final String placeholder;
+
+        PlaceholderTextField(String placeholder) {
+            this.placeholder = placeholder;
+        }
+
+        @Override
+        protected void paintComponent(Graphics graphics) {
+            super.paintComponent(graphics);
+
+            if (!getText().isEmpty()) {
+                return;
+            }
+
+            Graphics2D g = (Graphics2D) graphics.create();
+            Insets insets = getInsets();
+            FontMetrics metrics = g.getFontMetrics(getFont());
+            int baseline = insets.top
+                    + (getHeight() - insets.top - insets.bottom
+                    - metrics.getHeight()) / 2
+                    + metrics.getAscent();
+
+            g.setColor(new Color(130, 137, 148));
+            g.drawString(placeholder, insets.left, baseline);
+            g.dispose();
         }
     }
 

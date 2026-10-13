@@ -19,7 +19,7 @@ public class Dashboard extends JFrame {
         super("Student Portal | Dashboard");
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        setMinimumSize(new Dimension(900, 600));
+        setMinimumSize(new Dimension(640, 420));
         setSize(1100, 700);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
@@ -51,27 +51,25 @@ public class Dashboard extends JFrame {
         brand.add(sub);
         header.add(brand, BorderLayout.WEST);
 
-        JLabel welcome = new JLabel(
-            "Welcome, " + user.getFullName() + "  •  " + user.getRole()
-        );
-        welcome.setForeground(Color.WHITE);
-        welcome.setFont(new Font("SansSerif", Font.BOLD, 16));
-        header.add(welcome, BorderLayout.EAST);
-
         add(header, BorderLayout.NORTH);
 
         JPanel content = new JPanel(new BorderLayout(0, 26));
         content.setOpaque(false);
         content.setBorder(
-            BorderFactory.createEmptyBorder(32, 40, 36, 40)
+            BorderFactory.createEmptyBorder(24, 28, 24, 28)
         );
 
-        JPanel intro = new JPanel(new BorderLayout(4, 4));
+        JPanel intro = new JPanel();
         intro.setOpaque(false);
+        intro.setLayout(new BoxLayout(intro, BoxLayout.Y_AXIS));
 
         JLabel heading = new JLabel("Overview");
         heading.setFont(new Font("SansSerif", Font.BOLD, 28));
         heading.setForeground(UI.PRIMARY);
+
+        JLabel welcome = new JLabel("Welcome back, " + user.getFullName() + "!");
+        welcome.setFont(new Font("SansSerif", Font.BOLD, 20));
+        welcome.setForeground(UI.PRIMARY);
 
         JLabel hint = new JLabel(
             "A quick look at your student records and academic activity."
@@ -79,8 +77,11 @@ public class Dashboard extends JFrame {
         hint.setForeground(UI.GRAY);
         hint.setFont(UI.BODY);
 
-        intro.add(heading, BorderLayout.NORTH);
-        intro.add(hint, BorderLayout.SOUTH);
+        intro.add(heading);
+        intro.add(Box.createVerticalStrut(8));
+        intro.add(welcome);
+        intro.add(Box.createVerticalStrut(4));
+        intro.add(hint);
 
         JPanel top = new JPanel(new BorderLayout(0, 18));
         top.setOpaque(false);
@@ -138,7 +139,7 @@ public class Dashboard extends JFrame {
 
         modules.add(actions, BorderLayout.CENTER);
         content.add(modules, BorderLayout.CENTER);
-        add(content, BorderLayout.CENTER);
+        add(UI.scrollable(content, 1040, 620), BorderLayout.CENTER);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -153,6 +154,7 @@ public class Dashboard extends JFrame {
         });
 
         refreshStats();
+        UI.enlargeText(this);
     }
 
     private static JLabel metricValue() {
@@ -259,54 +261,11 @@ public class Dashboard extends JFrame {
             0, 0, 1, 0, UI.BORDER
         ));
 
-        JMenu file = new JMenu("File");
-        styleMenu(file);
-        JMenuItem logout = new JMenuItem("Logout");
-        JMenuItem exit = new JMenuItem("Exit");
-        styleMenuItem(logout);
-        styleMenuItem(exit);
-
-        logout.addActionListener(e -> logout());
-        exit.addActionListener(e -> exitApp());
-
-        file.add(logout);
-        file.addSeparator();
-        file.add(exit);
-
-        JMenu modules = new JMenu("Modules");
-        styleMenu(modules);
-        JMenuItem students = new JMenuItem("Manage Students");
-        JMenuItem enrollment = new JMenuItem("Enrollment");
-        JMenuItem reports = new JMenuItem("Reports");
-        styleMenuItem(students);
-        styleMenuItem(enrollment);
-        styleMenuItem(reports);
-
-        students.addActionListener(e -> openStudents());
-        enrollment.addActionListener(e -> openEnrollment());
-        reports.addActionListener(e -> openReports());
-
-        modules.add(students);
-        modules.add(enrollment);
-        modules.add(reports);
-
-        bar.add(file);
-        bar.add(modules);
+        JButton logoutButton = UI.button("Log Out", UI.DANGER);
+        logoutButton.addActionListener(e -> logout());
+        bar.add(logoutButton);
 
         return bar;
-    }
-
-    private void styleMenu(JMenu menu) {
-        menu.setForeground(UI.PRIMARY);
-        menu.setFont(UI.BOLD);
-        menu.setOpaque(true);
-        menu.setBackground(Color.WHITE);
-    }
-
-    private void styleMenuItem(JMenuItem item) {
-        item.setForeground(UI.PRIMARY);
-        item.setBackground(Color.WHITE);
-        item.setFont(UI.BODY);
     }
 
     private void refreshStats() {
@@ -389,6 +348,7 @@ public class Dashboard extends JFrame {
         );
 
         if (confirmed) {
+            LoginForm.clearRememberedSession();
             closeChildren();
             dispose();
             new LoginForm().setVisible(true);

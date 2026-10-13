@@ -1,9 +1,15 @@
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 public class LoginForm extends JFrame {
+    private static final String SESSION_USERNAME_KEY = "activeUsername";
 
     // Colors - Student Portal Theme
     private static final Color PRIMARY = UI.ACCENT;
@@ -22,7 +28,7 @@ public class LoginForm extends JFrame {
         super("Student Management System | Login");
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(800, 580));
+        setMinimumSize(new Dimension(640, 420));
         setSize(1050, 680);
         setLocationRelativeTo(null);
 
@@ -32,9 +38,11 @@ public class LoginForm extends JFrame {
         root.add(createWelcomePanel());
         root.add(createLoginPanel());
 
-        setContentPane(root);
+        root.setPreferredSize(new Dimension(800, 680));
+        setContentPane(UI.scrollable(root, 800, 680));
 
         getRootPane().setDefaultButton(btnLogin);
+        UI.enlargeText(this);
     }
 
     // LEFT SIDE: Welcome panel
@@ -154,24 +162,13 @@ public class LoginForm extends JFrame {
     private JPanel createLoginPanel() {
 
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBackground(BACKGROUND);
-        panel.setBorder(new EmptyBorder(36, 44, 36, 44));
+        panel.setBackground(new Color(246, 249, 255));
+        panel.setBorder(new EmptyBorder(32, 44, 32, 44));
 
         JPanel form = new JPanel();
         form.setLayout(new BoxLayout(form, BoxLayout.Y_AXIS));
         form.setBackground(Color.WHITE);
-        form.setBorder(new EmptyBorder(40, 42, 40, 42));
-
-        // Heading
-        JLabel heading = new JLabel("Sign in");
-        heading.setFont(new Font("SansSerif", Font.BOLD, 28));
-        heading.setForeground(TEXT);
-        heading.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel description = new JLabel("Enter your account details to continue.");
-        description.setFont(new Font("SansSerif", Font.PLAIN, 15));
-        description.setForeground(MUTED);
-        description.setAlignmentX(Component.LEFT_ALIGNMENT);
+        form.setBorder(new EmptyBorder(30, 38, 30, 38));
 
         // Username
         JLabel usernameLabel = createLabel("Username");
@@ -189,7 +186,7 @@ public class LoginForm extends JFrame {
 
         // Show password
         cbShowPassword = new JCheckBox("Show password");
-        cbShowPassword.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        cbShowPassword.setFont(new Font("SansSerif", Font.PLAIN, 16));
         cbShowPassword.setForeground(MUTED);
         cbShowPassword.setBackground(Color.WHITE);
         cbShowPassword.setFocusPainted(false);
@@ -208,37 +205,15 @@ public class LoginForm extends JFrame {
         // Buttons
         btnLogin = new JButton("Sign In");
         stylePrimaryButton(btnLogin);
-
-        btnLogin.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        btnLogin.setPreferredSize(new Dimension(180, 54));
 
         btnLogin.addActionListener(e -> doLogin());
 
         JButton btnClear = new JButton("Clear fields");
-        btnClear.setFont(new Font("SansSerif", Font.PLAIN, 15));
-        btnClear.setUI(new javax.swing.plaf.basic.BasicButtonUI());
+        UI.styleButton(btnClear, new Color(241, 245, 251));
         btnClear.setForeground(PRIMARY);
-        btnClear.setBackground(Color.WHITE);
-        btnClear.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        btnClear.setContentAreaFilled(true);
-        btnClear.setOpaque(true);
-        btnClear.setFocusPainted(false);
-        btnClear.setAlignmentX(Component.LEFT_ALIGNMENT);
-        btnClear.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnClear.setMaximumSize(new Dimension(Integer.MAX_VALUE, 48));
-        btnClear.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseEntered(java.awt.event.MouseEvent e) {
-                btnClear.setBackground(new Color(232, 240, 253));
-            }
-
-            @Override
-            public void mouseExited(java.awt.event.MouseEvent e) {
-                btnClear.setBackground(Color.WHITE);
-            }
-        });
+        btnClear.setFont(new Font("SansSerif", Font.BOLD, 16));
+        btnClear.setPreferredSize(new Dimension(180, 54));
 
         btnClear.addActionListener(e -> {
             tfUser.setText("");
@@ -249,56 +224,88 @@ public class LoginForm extends JFrame {
         });
 
         // Footer
-        JLabel footer = new JLabel(
-            "Student Management System"
-        );
+        JLabel footer = new JLabel("Student Management System");
 
         footer.setFont(new Font("SansSerif", Font.PLAIN, 14));
         footer.setForeground(MUTED);
         footer.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Assemble the form
-        form.add(heading);
-        form.add(Box.createVerticalStrut(8));
-        form.add(description);
-
-        form.add(Box.createVerticalStrut(36));
         form.add(usernameLabel);
         form.add(Box.createVerticalStrut(8));
         form.add(tfUser);
 
-        form.add(Box.createVerticalStrut(26));
+        form.add(Box.createVerticalStrut(20));
         form.add(passwordLabel);
         form.add(Box.createVerticalStrut(8));
         form.add(pfPass);
 
-        form.add(Box.createVerticalStrut(10));
+        form.add(Box.createVerticalStrut(12));
         form.add(cbShowPassword);
 
-        form.add(Box.createVerticalStrut(30));
-        form.add(btnLogin);
+        JPanel actions = new JPanel(new GridLayout(1, 2, 12, 0));
+        actions.setOpaque(false);
+        actions.setAlignmentX(Component.LEFT_ALIGNMENT);
+        actions.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        actions.add(btnLogin);
+        actions.add(btnClear);
 
-        form.add(Box.createVerticalStrut(8));
-        form.add(btnClear);
+        form.add(Box.createVerticalStrut(24));
+        form.add(actions);
 
-        form.add(Box.createVerticalStrut(34));
+        form.add(Box.createVerticalStrut(26));
         form.add(new JSeparator());
-        form.add(Box.createVerticalStrut(18));
+        form.add(Box.createVerticalStrut(14));
         form.add(footer);
 
         // Let the form stretch horizontally
         form.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JPanel banner = new JPanel();
+        banner.setLayout(new BoxLayout(banner, BoxLayout.Y_AXIS));
+        banner.setBackground(PRIMARY);
+        banner.setBorder(new EmptyBorder(24, 38, 20, 38));
+
+        JLabel eyebrow = new JLabel("STUDENT PORTAL ACCOUNT");
+        eyebrow.setFont(new Font("SansSerif", Font.BOLD, 13));
+        eyebrow.setForeground(new Color(218, 229, 255));
+        eyebrow.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel heading = new JLabel("Sign in");
+        heading.setFont(new Font("SansSerif", Font.BOLD, 32));
+        heading.setForeground(Color.WHITE);
+        heading.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel description = new JLabel(
+            "<html><div style='width:210px'>"
+            + "Enter your details to access the workspace."
+            + "</div></html>"
+        );
+        description.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        description.setForeground(new Color(231, 238, 255));
+        description.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        banner.add(eyebrow);
+        banner.add(Box.createVerticalStrut(8));
+        banner.add(heading);
+        banner.add(Box.createVerticalStrut(4));
+        banner.add(description);
+
+        JPanel bannerAccent = new JPanel();
+        bannerAccent.setBackground(UI.DANGER);
+        bannerAccent.setPreferredSize(new Dimension(0, 5));
+        bannerAccent.setMinimumSize(new Dimension(0, 5));
+        bannerAccent.setMaximumSize(new Dimension(Integer.MAX_VALUE, 5));
+
+        JPanel bannerPanel = new JPanel(new BorderLayout());
+        bannerPanel.add(banner, BorderLayout.CENTER);
+        bannerPanel.add(bannerAccent, BorderLayout.SOUTH);
+
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER, 1),
-                BorderFactory.createMatteBorder(4, 0, 0, 0, UI.DANGER)
-            ),
-            BorderFactory.createEmptyBorder(0, 0, 0, 0)
-        ));
+        card.setBorder(BorderFactory.createLineBorder(BORDER, 1));
 
+        card.add(bannerPanel, BorderLayout.NORTH);
         card.add(form, BorderLayout.CENTER);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -329,15 +336,31 @@ public class LoginForm extends JFrame {
 
         field.setFont(new Font("SansSerif", Font.PLAIN, 16));
         field.setForeground(TEXT);
-        field.setBackground(new Color(248, 250, 252));
+        field.setBackground(Color.WHITE);
         field.setCaretColor(PRIMARY);
-        field.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(BORDER, 1),
-            BorderFactory.createEmptyBorder(10, 12, 10, 12)
-        ));
+        Border normalBorder = BorderFactory.createCompoundBorder(
+            new UI.RoundedBorder(BORDER, 16, 1),
+            new EmptyBorder(11, 13, 11, 13)
+        );
+        Border focusedBorder = BorderFactory.createCompoundBorder(
+            new UI.RoundedBorder(PRIMARY, 16, 2),
+            new EmptyBorder(10, 12, 10, 12)
+        );
+        field.setBorder(normalBorder);
+        field.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                field.setBorder(focusedBorder);
+            }
+
+            @Override
+            public void focusLost(FocusEvent event) {
+                field.setBorder(normalBorder);
+            }
+        });
 
         field.setMaximumSize(
-            new Dimension(Integer.MAX_VALUE, 50)
+            new Dimension(Integer.MAX_VALUE, 54)
         );
 
         field.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -380,8 +403,45 @@ public class LoginForm extends JFrame {
             return;
         }
 
+        rememberSession(user);
         dispose();
         new Dashboard(user).setVisible(true);
+    }
+
+    public static void showStartupWindow() {
+        Preferences preferences = Preferences.userNodeForPackage(LoginForm.class);
+        String username = preferences.get(SESSION_USERNAME_KEY, null);
+
+        if (username != null) {
+            for (User user : DataStore.get().getUsers()) {
+                if (username.equals(user.getUsername())) {
+                    new Dashboard(user).setVisible(true);
+                    return;
+                }
+            }
+
+            clearRememberedSession();
+        }
+
+        new LoginForm().setVisible(true);
+    }
+
+    private static void rememberSession(User user) {
+        try {
+            Preferences preferences = Preferences.userNodeForPackage(LoginForm.class);
+            preferences.put(SESSION_USERNAME_KEY, user.getUsername());
+            preferences.flush();
+        } catch (BackingStoreException | SecurityException ignored) {
+        }
+    }
+
+    static void clearRememberedSession() {
+        try {
+            Preferences preferences = Preferences.userNodeForPackage(LoginForm.class);
+            preferences.remove(SESSION_USERNAME_KEY);
+            preferences.flush();
+        } catch (BackingStoreException | SecurityException ignored) {
+        }
     }
 
     public static void main(String[] args) {
@@ -396,7 +456,7 @@ public class LoginForm extends JFrame {
             }
 
             UI.installTheme();
-            new LoginForm().setVisible(true);
+            showStartupWindow();
         });
     }
 }

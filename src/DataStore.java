@@ -593,7 +593,10 @@ public class DataStore {
             {"BSCE301", "Hydraulics", "BSCE"},
             {"BSN101", "Fundamentals of Nursing", "BSN"},
             {"BSN201", "Medical-Surgical Nursing", "BSN"},
-            {"BSN301", "Maternal and Child Health Nursing", "BSN"}
+            {"BSN301", "Maternal and Child Health Nursing", "BSN"},
+            {"BSED101", "Foundations of Education", "BSED"},
+            {"BSED201", "Educational Psychology", "BSED"},
+            {"BSED301", "Principles and Strategies of Teaching", "BSED"}
         };
 
         for (String[] major : majors) {

@@ -30,7 +30,8 @@ public class EnrollmentForm extends JFrame {
     private final JComboBox<String> cbSearchBy = new JComboBox<>(
             new String[]{
                 "All Fields", "Enrollment ID", "Student ID", "Name",
-                "Course", "Year Level", "Subject Code", "Subject Title"
+                "Course", "Year Level", "Subject Code", "Subject Title",
+                "Status"
             }
     );
     private final JComboBox<String> cbCourseFilter =
@@ -71,7 +72,7 @@ public class EnrollmentForm extends JFrame {
         super("Enrollment Management");
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(1200, 700);
-        setMinimumSize(new Dimension(850, 500));
+        setMinimumSize(new Dimension(640, 420));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationRelativeTo(null);
         getContentPane().setBackground(BACKGROUND);
@@ -79,10 +80,14 @@ public class EnrollmentForm extends JFrame {
 
         add(buildHeader(), BorderLayout.NORTH);
 
-        add(buildMainPanel(), BorderLayout.CENTER);
+        add(UI.scrollable(buildMainPanel(), 1120, 620), BorderLayout.CENTER);
 
         styleTable();
+        JScrollPane tableScroll = (JScrollPane) SwingUtilities
+            .getAncestorOfClass(JScrollPane.class, table);
+        UI.fillTableViewport(table, tableScroll);
         reloadAll();
+        UI.enlargeText(this);
     }
 
     private JPanel buildHeader() {
@@ -333,8 +338,8 @@ public class EnrollmentForm extends JFrame {
         tfSearch.setPreferredSize(new Dimension(260, 44));
         tfSearch.setToolTipText("Enter a value for the selected search category");
         tfSearch.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)
+                new UI.RoundedBorder(BORDER, 16, 1),
+                BorderFactory.createEmptyBorder(8, 12, 8, 12)
         ));
 
         styleCombo(cbSearchBy);
@@ -392,7 +397,7 @@ public class EnrollmentForm extends JFrame {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
-        scroll.setBorder(BorderFactory.createLineBorder(BORDER));
+        scroll.setBorder(new UI.RoundedBorder(BORDER, 16, 1));
         scroll.getViewport().setBackground(WHITE);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         scroll.getHorizontalScrollBar().setUnitIncrement(16);
@@ -447,12 +452,12 @@ public class EnrollmentForm extends JFrame {
 
     private void styleTable() {
         UI.style(table);
-        table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        table.setFont(new Font("SansSerif", Font.PLAIN, 16));
         table.setForeground(TEXT);
         table.setBackground(WHITE);
         table.setSelectionBackground(new Color(219, 234, 254));
         table.setSelectionForeground(TEXT);
-        table.setRowHeight(42);
+        table.setRowHeight(48);
         table.setShowVerticalLines(false);
         table.setShowHorizontalLines(true);
         table.setGridColor(new Color(238, 242, 247));
@@ -462,20 +467,53 @@ public class EnrollmentForm extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
 
         table.getTableHeader().setFont(
-                new Font("SansSerif", Font.BOLD, 14)
+                new Font("SansSerif", Font.BOLD, 16)
         );
         table.getTableHeader().setBackground(UI.PRIMARY);
         table.getTableHeader().setForeground(WHITE);
         table.getTableHeader().setPreferredSize(new Dimension(0, 46));
         table.getTableHeader().setReorderingAllowed(false);
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
         renderer.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
 
         for (int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setCellRenderer(renderer);
+            if (i != 7) {
+                table.getColumnModel().getColumn(i).setCellRenderer(renderer);
+            }
         }
+
+        DefaultTableCellRenderer statusRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table,
+                    Object value,
+                    boolean selected,
+                    boolean focused,
+                    int row,
+                    int column) {
+                String status = value == null ? "" : value.toString();
+                Color fill;
+                Color border;
+                if ("Enrolled".equals(status)) {
+                    fill = new Color(34, 197, 94);
+                    border = new Color(22, 163, 74);
+                } else if ("Dropped".equals(status)) {
+                    fill = new Color(239, 68, 68);
+                    border = new Color(220, 38, 38);
+                } else {
+                    fill = new Color(226, 232, 240);
+                    border = new Color(148, 163, 184);
+                }
+
+                JLabel label = new UI.RoundedLabel(status, fill, border, Color.WHITE, 18);
+                label.setHorizontalAlignment(SwingConstants.CENTER);
+                label.setBorder(BorderFactory.createEmptyBorder(6, 12, 6, 12));
+                return label;
+            }
+        };
+        table.getColumnModel().getColumn(7).setCellRenderer(statusRenderer);
 
         int[] widths = {110, 100, 170, 110, 200, 65, 110, 100};
         for (int i = 0; i < widths.length; i++) {
@@ -536,8 +574,8 @@ public class EnrollmentForm extends JFrame {
         String selectedCode = preferredCode;
 
         if (preferred != null && course != null
-                && !"General".equals(preferred.getCourse())
-                && !course.equals(preferred.getCourse())) {
+            && ("General".equals(preferred.getCourse())
+            || !course.equals(preferred.getCourse()))) {
             selectedCode = null;
         }
 
@@ -673,6 +711,9 @@ public class EnrollmentForm extends JFrame {
                     case "Subject Title":
                         searchable = subjectTitle;
                         break;
+                    case "Status":
+                        searchable = e.getStatus();
+                        break;
                     default:
                         searchable = e.getEnrollmentId() + " "
                                 + e.getStudentId() + " "
@@ -681,7 +722,8 @@ public class EnrollmentForm extends JFrame {
                                 + studentYear + " "
                                 + e.getSubjectCode() + " "
                                 + subjectTitle + " "
-                                + (subject == null ? "" : subject.getCourse());
+                                + (subject == null ? "" : subject.getCourse()) + " "
+                                + e.getStatus();
                 }
                 if (!searchable.toLowerCase().contains(query)) {
                     continue;
@@ -773,7 +815,7 @@ public class EnrollmentForm extends JFrame {
         JPanel panel = new JPanel();
         panel.setBackground(WHITE);
         panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(BORDER),
+                new UI.RoundedBorder(BORDER, 18, 1),
                 BorderFactory.createEmptyBorder(12, 14, 12, 14)
         ));
         return panel;
@@ -823,6 +865,7 @@ public class EnrollmentForm extends JFrame {
         combo.setFont(new Font("SansSerif", Font.PLAIN, 14));
         combo.setForeground(TEXT);
         combo.setBackground(WHITE);
+        combo.setBorder(new UI.RoundedBorder(BORDER, 16, 1));
         combo.setPreferredSize(new Dimension(190, 44));
     }
 }

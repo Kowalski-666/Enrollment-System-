@@ -7,6 +7,6 @@ public class Main {
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         } catch (Exception ignored) { }
         UI.installTheme();
-        SwingUtilities.invokeLater(() -> new LoginForm().setVisible(true));
+        SwingUtilities.invokeLater(LoginForm::showStartupWindow);
     }
 }
